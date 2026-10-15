@@ -26,6 +26,9 @@ public sealed class NovaApp(Func<Widget> root, ITextMeasurer text)
 
     public void OnPointer(PointerEvent e)
     {
-        if (_root.HandlePointer(e)) Rebuild();
+        if (!_root.HandlePointer(e)) return;
+
+        if (e.Kind == PointerKind.Up) Rebuild();
+        else _dirty = true;
     }
 }

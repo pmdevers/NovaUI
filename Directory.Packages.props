@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="SkiaSharp" Version="3.116.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.116.1" />
     <PackageVersion Include="Silk.NET.Windowing" Version="2.21.0" />
     <PackageVersion Include="Silk.NET.Input" Version="2.21.0" />
     <PackageVersion Include="Silk.NET.OpenGL" Version="2.21.0" />

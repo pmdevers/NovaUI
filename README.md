@@ -15,10 +15,10 @@ Desktop.Run(() => new Column(
 |---|---|
 | `src/NovaUI` | Core: geometry, widgets, layout, state, `ICanvas` abstraction. No platform deps. |
 | `src/NovaUI.Skia` | SkiaSharp `ICanvas` / text measurer. |
-| `src/NovaUI.Desktop` | Window + input + render loop (Silk.NET). **Host not implemented yet.** |
+| `src/NovaUI.Desktop` | Window, mouse input and render loop (Silk.NET + Skia). |
 | `samples/Counter` | Sample app. |
 | `tests/NovaUI.Tests` | xUnit tests for core. |
 
 ## Build
 
-Requires .NET 9 SDK: `dotnet build NovaUI.slnx && dotnet test NovaUI.slnx`
+Requires .NET 10 SDK: `dotnet build NovaUI.slnx && dotnet test NovaUI.slnx`

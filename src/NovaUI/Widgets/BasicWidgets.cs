@@ -54,8 +54,13 @@ public sealed class Column(params Widget[] children) : Widget
 
     public override void Paint(ICanvas canvas) { foreach (var c in children) c.Paint(canvas); }
 
-    public override bool HandlePointer(PointerEvent e) =>
-        children.Reverse().Any(c => c.HandlePointer(e));
+    public override bool HandlePointer(PointerEvent e)
+    {
+        for (var i = children.Length - 1; i >= 0; i--)
+            if (children[i].HandlePointer(e)) return true;
+
+        return false;
+    }
 }
 
 public sealed class Button(string label, Action onPressed) : Widget
@@ -77,7 +82,13 @@ public sealed class Button(string label, Action onPressed) : Widget
 
     public override bool HandlePointer(PointerEvent e)
     {
-        if (!Bounds.Contains(e.Position)) { _pressed = false; return false; }
+        if (!Bounds.Contains(e.Position))
+        {
+            var wasPressed = _pressed;
+            _pressed = false;
+            return wasPressed;
+        }
+
         switch (e.Kind)
         {
             case PointerKind.Down: _pressed = true; return true;
