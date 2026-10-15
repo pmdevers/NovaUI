@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>NovaUI core: widgets, layout, state and rendering abstractions. No platform dependencies.</Description>
+  </PropertyGroup>
+</Project>

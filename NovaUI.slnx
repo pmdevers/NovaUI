@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NovaUI/NovaUI.csproj" />
+    <Project Path="src/NovaUI.Skia/NovaUI.Skia.csproj" />
+    <Project Path="src/NovaUI.Desktop/NovaUI.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Counter/Counter.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NovaUI.Tests/NovaUI.Tests.csproj" />
+  </Folder>
+</Solution>

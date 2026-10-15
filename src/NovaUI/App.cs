@@ -1,0 +1,31 @@
+using NovaUI.Input;
+using NovaUI.Rendering;
+using NovaUI.Widgets;
+
+namespace NovaUI;
+
+/// <summary>Platform-independent app runtime: owns the root widget and drives layout/paint/input.</summary>
+public sealed class NovaApp(Func<Widget> root, ITextMeasurer text)
+{
+    private Widget _root = root();
+    private bool _dirty = true;
+
+    public bool NeedsRedraw => _dirty;
+
+    /// <summary>Discard the widget tree and rebuild it from the root factory.</summary>
+    public void Rebuild() { _root = root(); _dirty = true; }
+
+    public void Render(ICanvas canvas, Size viewport)
+    {
+        _root.Layout(Constraints.Loose(viewport), new BuildContext(text));
+        _root.Arrange(new Rect(0, 0, viewport.Width, viewport.Height));
+        canvas.Clear(Color.White);
+        _root.Paint(canvas);
+        _dirty = false;
+    }
+
+    public void OnPointer(PointerEvent e)
+    {
+        if (_root.HandlePointer(e)) Rebuild();
+    }
+}

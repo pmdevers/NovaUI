@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SkiaSharp implementation of NovaUI's ICanvas.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NovaUI\NovaUI.csproj" />
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+</Project>

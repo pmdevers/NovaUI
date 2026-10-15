@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Desktop host (Windows/macOS/Linux): window, input and render loop.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NovaUI\NovaUI.csproj" />
+    <ProjectReference Include="..\NovaUI.Skia\NovaUI.Skia.csproj" />
+    <PackageReference Include="Silk.NET.Windowing" />
+    <PackageReference Include="Silk.NET.Input" />
+    <PackageReference Include="Silk.NET.OpenGL" />
+  </ItemGroup>
+</Project>
