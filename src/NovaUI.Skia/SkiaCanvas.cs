@@ -19,7 +19,7 @@ public sealed class SkiaCanvas(SKCanvas canvas) : ICanvas
 
     public void DrawText(string text, Point origin, float fontSize, Color color)
     {
-        using var font = new SKFont { Size = fontSize };
+        using var font = new SKFont(SkiaTextMeasurer.SharedTypeface) { Size = fontSize };
         using var paint = new SKPaint { Color = Map(color), IsAntialias = true };
         canvas.DrawText(text, origin.X, origin.Y, SKTextAlign.Left, font, paint);
     }
@@ -31,9 +31,14 @@ public sealed class SkiaCanvas(SKCanvas canvas) : ICanvas
 
 public sealed class SkiaTextMeasurer : ITextMeasurer
 {
+    internal static SKTypeface SharedTypeface { get; } =
+        SKFontManager.Default.MatchFamily("Segoe UI Symbol")
+        ?? SKFontManager.Default.MatchFamily("Segoe UI")
+        ?? SKTypeface.Default;
+
     public Size Measure(string text, float fontSize)
     {
-        using var font = new SKFont { Size = fontSize };
+        using var font = new SKFont(SharedTypeface) { Size = fontSize };
         var width = font.MeasureText(text);
         return new Size(width, fontSize * 1.2f);
     }

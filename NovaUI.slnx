@@ -5,6 +5,7 @@
     <Project Path="src/NovaUI.Desktop/NovaUI.Desktop.csproj" />
   </Folder>
   <Folder Name="/samples/">
+    <Project Path="samples/Calculator/Calculator.csproj" />
     <Project Path="samples/Counter/Counter.csproj" />
   </Folder>
   <Folder Name="/tests/">

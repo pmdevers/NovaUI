@@ -1,6 +1,4 @@
-using System.Numerics;
 using NovaUI.Input;
-using NovaUI.Rendering;
 using NovaUI.Skia;
 using NovaUI.Widgets;
 using Silk.NET.Input;
@@ -8,6 +6,7 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using SkiaSharp;
+using System.Numerics;
 
 namespace NovaUI.Desktop;
 
@@ -37,122 +36,11 @@ public static class Desktop
         """;
 
     /// <summary>Opens a window and runs the app until closed.</summary>
-    public static unsafe void Run(Func<Widget> root, string title = "NovaUI", int width = 800, int height = 600)
+    public static void Run(Func<Widget> root, string title = "NovaUI", int width = 800, int height = 600)
     {
-        ArgumentNullException.ThrowIfNull(root);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
-
-        var options = WindowOptions.Default;
-        options.Title = title;
-        options.Size = new Vector2D<int>(width, height);
-        options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(3, 3));
-
-        // The GLFW build bundled with Silk.NET fails to initialise on Wayland sessions; SDL handles both.
-        Window.PrioritizeSdl();
-        using var window = Window.Create(options);
-        var app = new NovaApp(root, new SkiaTextMeasurer());
-        GL? gl = null;
-        IInputContext? input = null;
-        SKBitmap? bitmap = null;
-        SKCanvas? canvas = null;
-        uint texture = 0;
-        uint vertexArray = 0;
-        uint program = 0;
-        var surfaceWidth = 0;
-        var surfaceHeight = 0;
-
-        window.Load += () =>
-        {
-            gl = GL.GetApi(window);
-            program = CreateProgram(gl);
-            vertexArray = gl.GenVertexArray();
-            gl.BindVertexArray(vertexArray);
-            texture = gl.GenTexture();
-            gl.ActiveTexture(TextureUnit.Texture0);
-            gl.BindTexture(TextureTarget.Texture2D, texture);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)GLEnum.Linear);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)GLEnum.Linear);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)GLEnum.ClampToEdge);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)GLEnum.ClampToEdge);
-            gl.UseProgram(program);
-            gl.Uniform1(gl.GetUniformLocation(program, "source"), 0);
-
-            input = window.CreateInput();
-            foreach (var mouse in input.Mice)
-            {
-                mouse.MouseDown += (_, button) =>
-                {
-                    if (button == MouseButton.Left)
-                        app.OnPointer(new PointerEvent(PointerKind.Down, ToPoint(mouse.Position, window)));
-                };
-                mouse.MouseUp += (_, button) =>
-                {
-                    if (button == MouseButton.Left)
-                        app.OnPointer(new PointerEvent(PointerKind.Up, ToPoint(mouse.Position, window)));
-                };
-                mouse.MouseMove += (_, position) =>
-                    app.OnPointer(new PointerEvent(PointerKind.Move, ToPoint(position, window)));
-            }
-        };
-
-        window.FramebufferResize += size => gl?.Viewport(size);
-        window.Render += _ =>
-        {
-            if (gl is null) return;
-
-            var framebufferSize = window.FramebufferSize;
-            var currentWidth = framebufferSize.X;
-            var currentHeight = framebufferSize.Y;
-            if (currentWidth <= 0 || currentHeight <= 0) return;
-
-            if (currentWidth != surfaceWidth || currentHeight != surfaceHeight)
-            {
-                canvas?.Dispose();
-                bitmap?.Dispose();
-                surfaceWidth = currentWidth;
-                surfaceHeight = currentHeight;
-                bitmap = new SKBitmap(new SKImageInfo(surfaceWidth, surfaceHeight, SKColorType.Rgba8888, SKAlphaType.Premul));
-                canvas = new SKCanvas(bitmap);
-                gl.BindTexture(TextureTarget.Texture2D, texture);
-                gl.TexImage2D(TextureTarget.Texture2D, 0, (int)InternalFormat.Rgba,
-                    (uint)surfaceWidth, (uint)surfaceHeight, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (void*)0);
-                app.Render(new SkiaCanvas(canvas), new Size(surfaceWidth, surfaceHeight));
-                UploadPixels(gl, bitmap, texture, surfaceWidth, surfaceHeight);
-            }
-            else if (app.NeedsRedraw && bitmap is not null && canvas is not null)
-            {
-                app.Render(new SkiaCanvas(canvas), new Size(surfaceWidth, surfaceHeight));
-                UploadPixels(gl, bitmap, texture, surfaceWidth, surfaceHeight);
-            }
-
-            gl.Viewport(0, 0, (uint)currentWidth, (uint)currentHeight);
-            gl.ClearColor(1, 1, 1, 1);
-            gl.Clear(ClearBufferMask.ColorBufferBit);
-            gl.UseProgram(program);
-            gl.BindVertexArray(vertexArray);
-            gl.ActiveTexture(TextureUnit.Texture0);
-            gl.BindTexture(TextureTarget.Texture2D, texture);
-            gl.DrawArrays(PrimitiveType.Triangles, 0, 3);
-        };
-
-        try
-        {
-            window.Run();
-        }
-        finally
-        {
-            canvas?.Dispose();
-            bitmap?.Dispose();
-            input?.Dispose();
-            if (gl is not null)
-            {
-                if (program != 0) gl.DeleteProgram(program);
-                if (texture != 0) gl.DeleteTexture(texture);
-                if (vertexArray != 0) gl.DeleteVertexArray(vertexArray);
-                gl.Dispose();
-            }
-        }
+        using var manager = new WindowManager();
+        manager.Create(root, title, width, height);
+        manager.Run();
     }
 
     private static Point ToPoint(Vector2 position, IWindow window)
