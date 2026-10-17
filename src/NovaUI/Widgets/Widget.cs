@@ -4,12 +4,15 @@ using NovaUI.Rendering;
 namespace NovaUI.Widgets;
 
 /// <summary>Context handed to widgets during layout and paint.</summary>
-public sealed record BuildContext(ITextMeasurer Text);
+public sealed record BuildContext(ITextMeasurer Text, FocusManager? Focus = null);
 
 /// <summary>Base class for every UI element. Widgets are declared in code.</summary>
 public abstract class Widget
 {
     public Rect Bounds { get; protected set; }
+
+    /// <summary>Application services (window manager, ...).</summary>
+    public AppContext Context => AppContext.Current;
 
     /// <summary>Compute and return the size this widget wants within the constraints.</summary>
     public abstract Size Layout(Constraints constraints, BuildContext context);

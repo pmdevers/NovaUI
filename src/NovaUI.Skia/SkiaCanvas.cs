@@ -24,6 +24,14 @@ public sealed class SkiaCanvas(SKCanvas canvas) : ICanvas
         canvas.DrawText(text, origin.X, origin.Y, SKTextAlign.Left, font, paint);
     }
 
+    public void DrawImage(Image image, Rect r)
+    {
+        var info = new SKImageInfo(image.Width, image.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
+        using var skImage = SKImage.FromPixelCopy(info, image.Rgba);
+        using var paint = new SKPaint { IsAntialias = true };
+        canvas.DrawImage(skImage, new SKRect(r.X, r.Y, r.Right, r.Bottom), new SKSamplingOptions(SKFilterMode.Linear), paint);
+    }
+
     public void Save() => canvas.Save();
     public void Restore() => canvas.Restore();
     public void ClipRect(Rect r) => canvas.ClipRect(new SKRect(r.X, r.Y, r.Right, r.Bottom));

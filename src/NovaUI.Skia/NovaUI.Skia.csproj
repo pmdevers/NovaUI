@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NovaUI\NovaUI.csproj" />
+    <ProjectReference Include="..\NovaUI.Desktop\NovaUI.Desktop.csproj" />
     <PackageReference Include="SkiaSharp" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
   </ItemGroup>

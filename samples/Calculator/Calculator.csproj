@@ -7,5 +7,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\NovaUI\NovaUI.csproj" />
 		<ProjectReference Include="..\..\src\NovaUI.Desktop\NovaUI.Desktop.csproj" />
+		<ProjectReference Include="..\..\src\NovaUI.Skia\NovaUI.Skia.csproj" />
 	</ItemGroup>
 </Project>
